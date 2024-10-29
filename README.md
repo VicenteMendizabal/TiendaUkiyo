@@ -1,2 +1,2 @@
 # TiendaUkiyo
-Proyecto de Ventas 3D en el juego SecondLife
+Implementacion de uso de carrito de compras, mas productos 3D.
