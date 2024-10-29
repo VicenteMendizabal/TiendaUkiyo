@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Ukiyo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        /* Fuentes y Estilos Generales */
+        @font-face {
+            font-family: 'HorstBlackletter';
+            src: url('Horst Blackletter Demo.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-image: url('Japan.png');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Estilos de la barra de navegación */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        header nav {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        header nav a {
+            margin: 0 1.5rem;
+            text-decoration: none;
+            color: white;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        header nav a:hover {
+            color: #aaa;
+        }
+
+        /* Icono del Carrito */
+        .cart-container {
+            margin-right: 2rem;
+            cursor: pointer;
+        }
+
+        .cart-icon {
+            color: white;
+            font-size: 1.5rem;
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 0.2rem 0.4rem;
+            font-size: 0.8rem;
+        }
+
+        /* Modal del Carrito */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Sección de Bienvenida */
+        .welcome-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: rgb(0, 0, 0);
+            padding-top: 5rem;
+        }
+
+        .welcome-title {
+            font-family: 'HorstBlackletter', sans-serif;
+            font-size: 6rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .welcome-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .ver-catalogo-btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            color: rgb(0, 0, 0);
+            background-color: transparent;
+            border: 2px solid rgb(0, 0, 0);
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .ver-catalogo-btn:hover {
+            background-color: white;
+            color: black;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Catálogo de Productos */
+        main {
+            flex: 1;
+            padding-top: 7rem;
+        }
+
+        .catalogo {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .producto {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .producto:hover {
+            transform: translateY(-5px);
+        }
+
+        .producto img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .producto h2 {
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .producto p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .producto .agregar-btn {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .producto .agregar-btn:hover {
+            background-color: #444;
+        }
+
+        /* Estilos para la sección Nosotros */
+        .nosotros-section {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 4rem 2rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nosotros-content {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nosotros-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .nosotros-section h2 {
+            font-family: 'HorstBlackletter', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .nosotros-section p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .nosotros-image {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .nosotros-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            width: 100%;
+        }
+
+        /* Ajustes de Responsividad */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 4rem;
+            }
+
+            .catalogo {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .producto img {
+                height: 250px;
+            }
+
+            .nosotros-content {
+                flex-direction: column;
+            }
+            
+            .nosotros-image {
+                width: 100%;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de Navegación -->
+    <header>
+        <nav>
+            <a href="#catalogo-section">Ukiyo</a>
+            <a href="#nosotros">Nosotros</a>
+            <div class="cart-container" onclick="toggleModal()">
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="cart-count">0</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Modal del Carrito -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleModal()">&times;</span>
+            <h2>Carrito de Compras</h2>
+            <div id="cartItems" class="cart-items">
+                <!-- Los items del carrito se agregarán aquí dinámicamente -->
+            </div>
+            <div class="cart-total">
+                <h3>Total de productos: <span id="totalItems">0</span></h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Bienvenida -->
+    <section class="welcome-section">
+        <h1 class="welcome-title">Ukiyo</h1>
+        <p class="welcome-subtitle">Descubre nuestra colección de diseños para SecondLife</p>
+        <a href="#catalogo-section" class="ver-catalogo-btn">Ver Catálogo</a>
+    </section>
+
+    <!-- Catálogo de Productos -->
+    <section id="catalogo-section">
+        <main>
+            <section class="catalogo">
+                <div class="producto">
+                    <img src="ad1.jpg" alt="Diseño 1">
+                    <h2>Diseño 1</h2>
+                    <p>Diseño exclusivo para SecondLife</p>
+                    <button class="agregar-btn">Agregar al carrito</button>
+                </div>
+                <div class="producto">
+                    <img src="ad2.jpg" alt="Diseño 2">
+                    <h2>Diseño 2</h2>
+                    <p>Diseño exclusivo para SecondLife</p>
+                    <button class="agregar-btn">Agregar al carrito</button>
+                </div>
+                <div class="producto">
+                    <img src="ad3.jpg" alt="Diseño 3">
+                    <h2>Diseño 3</h2>
+                    <p>Diseño exclusivo para SecondLife</p>
+                    <button class="agregar-btn">Agregar al carrito</button>
+                </div>
+                <div class="producto">
+                    <img src="ad4.jpg" alt="Diseño 4">
+                    <h2>Diseño 4</h2>
+                    <p>Diseño exclusivo para SecondLife</p>
+                    <button class="agregar-btn">Agregar al carrito</button>
+                </div>
+                <div class="producto">
+                    <img src="ad5.jpg" alt="Diseño 5">
+                    <h2>Diseño 5</h2>
+                    <p>Diseño exclusivo para SecondLife</p>
+                    <button class="agregar-btn">Agregar al carrito</button>
+                </div>
+                <div class="producto">
+                    <img src="ad6.jpg" alt="Diseño 6">
+                    <h2>Diseño 6</h2>
+                    <p>Diseño exclusivo para SecondLife</p>
+                    <button class="agregar-btn">Agregar al carrito</button>
+                </div>
+                <div class="producto">
+                    <img src="ad7.jpg" alt="Diseño 7">
+                    <h2>Diseño 7</h2>
+                    <p>Diseño exclusivo para SecondLife</p>
+                    <button class="agregar-btn">Agregar al carrito</button>
+                </div>
+                <div class="producto">
+                    <img src="ad8.jpg" alt="Diseño 8">
+                    <h2>Diseño 8</h2>
+                    <p>Diseño exclusivo para SecondLife</p>
+                    <button class="agregar-btn">Agregar al carrito</button>
+                </div>
+            </section>
+        </main>
+    </section>
+
+    <!-- Sección Nosotros -->
+    <section id="nosotros" class="nosotros-section">
+        <div class="nosotros-content">
+            <div class="nosotros-text">
+                <h2>Sobre Ukiyo</h2>
+                <p>Bienvenidos a Ukiyo, tu destino exclusivo para accesorios y moda virtual en Second Life. Nos especializamos en la creación de productos 3D de alta calidad que dan vida a tus personajes virtuales.</p>
+                <p>Nuestra pasión es diseñar accesorios únicos, desde joyas y complementos hasta prendas de vestir completas, todos creados con atención al detalle y siguiendo las últimas tendencias. En Ukiyo, fusionamos la estética tradicional japonesa con diseños contemporáneos para crear piezas que destacan en el mundo virtual.</p>
+                <p>Cada producto es cuidadosamente modelado y optimizado para garantizar la mejor experiencia en ambas plataformas, permitiéndote expresar tu estilo único en Second Life.</p>
+            </div>
+            <div class="nosotros-image">
+                <img src="ukiyologo.png" alt="Ukiyo Store">
+
+    <footer>
+        <p>© 2024 Ukiyo. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        let cartCount = 0;
+        let cartItems = [];
+        const modal = document.getElementById('cartModal');
+
+        function agregarAlCarrito(event) {
+            const productoElement = event.target.closest('.producto');
+            const nombreProducto = productoElement.querySelector('h2').textContent;
+            
+            cartCount++;
+            document.getElementById('cart-count').textContent = cartCount;
+            
+            cartItems.push(nombreProducto);
+            actualizarCarrito();
+        }
+
+        function actualizarCarrito() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            cartItemsContainer.innerHTML = '';
+            
+            cartItems.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <span>${item}</span>
+                    <button onclick="eliminarDelCarrito(${index})" class="btn btn-danger btn-sm">Eliminar</button>
+                `;
+                cartItemsContainer.appendChild(itemElement);
+            });
+
+            document.getElementById('totalItems').textContent = cartItems.length;
+        }
+
+        function eliminarDelCarrito(index) {
+            cartItems.splice(index, 1);
+            cartCount--;
+            document.getElementById('cart-count').textContent = cartCount;
+            actualizarCarrito();
+        }
+
+        function toggleModal() {
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Cerrar modal cuando se hace clic fuera de él
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Actualizar los event listeners de los botones
+        document.querySelectorAll('.agregar-btn').forEach(button => {
+            button.onclick = agregarAlCarrito;
+        });
+    </script>
+</body>
+</html>

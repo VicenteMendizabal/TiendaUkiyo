@@ -1,2 +1,2 @@
 # TiendaUkiyo
-Proyecto de Ventas.
+Proyecto de Ventas 3D en el juego SecondLife
